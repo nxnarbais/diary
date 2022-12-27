@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native';
 import app from './firebaseConfig.js';
 import { getFirestore, collection, doc, getDoc, addDoc, getDocs } from "firebase/firestore";
+import NoteForm from './src/NoteForm/App.js';
 
 const db = getFirestore(app);
 
@@ -65,7 +66,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    console.log("useEffect saving");
+    console.log(`useEffect saving - [saving:${saving}]`);
     const storeData = async (value) => {
       try {
         const docRef = await addDoc(collection(db, "test"), value);
@@ -95,10 +96,24 @@ export default function App() {
 
   }, [saving])
 
+  const onSubmit = async (content) => {
+    console.log(content)
+  }
+
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <Text>Dodo's diary</Text>
+
+      <NoteForm
+        init={{
+          date: new Date(),
+          title: 'default title',
+          content: 'default content',
+          labels: ['something']
+        }}
+        onSubmit={onSubmit}
+      />
       <Text>[{text} - {number}]</Text>
       <TextInput
         style={styles.input}
