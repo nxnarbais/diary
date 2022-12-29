@@ -4,7 +4,15 @@ import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 're
 const CNAME = 'NoteForm/App';
 const DEBUG = true;
 
-const App = (props) => {
+interface IInit {
+  date: Date
+  title: string
+  content: string
+  labels: string[]
+}
+type IOnSubmit = (a: IInit) => Promise<void>;
+
+const App = (props: { init: IInit, onSubmit: IOnSubmit }) => {
   const {init, onSubmit} = props;
 
   const [date, onChangeDate] = React.useState(!!init && init.date || new Date());
@@ -77,7 +85,7 @@ const App = (props) => {
         value={labels.join(", ")}
       />
       <Button
-        onPress={() => onChangeSubmitting(state)}
+        onPress={() => onChangeSubmitting(true)}
         title={submitting ? "Saving..." : "Save"}
         color="#841584"
         disabled={submitting}

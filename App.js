@@ -3,7 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native';
 import app from './firebaseConfig.js';
 import { getFirestore, collection, doc, getDoc, addDoc, getDocs } from "firebase/firestore";
-import NoteForm from './src/NoteForm/App.js';
+import NoteForm from './src/NoteForm/App';
+import { StoreProvider } from "./src/Store";
 
 const db = getFirestore(app);
 
@@ -101,6 +102,7 @@ export default function App() {
   }
 
   return (
+    <StoreProvider>
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <Text>Dodo's diary</Text>
@@ -114,6 +116,7 @@ export default function App() {
         }}
         onSubmit={onSubmit}
       />
+
       <Text>[{text} - {number}]</Text>
       <TextInput
         style={styles.input}
@@ -133,7 +136,7 @@ export default function App() {
         onChangeText={text => {onChangeTextArea(text);}}
         value={textarea}
         editable
-        style={{padding: 10}}
+        style={{ padding: 10 }}
       />
       <Button
         // onPress={() => storeData(state)}
@@ -144,7 +147,8 @@ export default function App() {
       {saving && <ActivityIndicator size="large" />}
       <StatusBar style="auto" />
     </View>
-  );
+    </StoreProvider>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -152,12 +156,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   input: {
     height: 40,
     margin: 12,
     borderWidth: 1,
-    padding: 10,
-  },
-});
+    padding: 10
+  }
+})
