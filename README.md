@@ -1,0 +1,4 @@
+Diary
+=====
+
+X year diary
