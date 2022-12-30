@@ -19,20 +19,6 @@ const HomeScreen = ({ navigation }) => {
         }
       />
       <Button
-        title="Go to notes"
-        onPress={() =>
-          navigation.navigate('Note Form', {
-            init: {
-              date: new Date(),
-              title: 'default title',
-              content: 'default content',
-              labels: ['something']
-            },
-            onSubmit: console.log
-          })
-        }
-      />
-      <Button
         title="My daily notes"
         onPress={() =>
           navigation.navigate('DailyNoteList', {})
