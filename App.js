@@ -1,16 +1,12 @@
-import React, { useEffect } from "react";
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native';
-// import app from './firebaseConfig.js';
-// import { getFirestore, collection, doc, getDoc, addDoc, getDocs } from "firebase/firestore";
-import NoteForm from './src/NoteForm/App';
-import NoteList from './src/NoteList/App';
-import { StoreProvider } from "./src/Store";
+import React from 'react'
+import { StatusBar } from 'expo-status-bar'
+import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native'
+import NoteForm from './src/NoteForm/App'
+import DailyNoteList from './src/DailyNoteList/App'
+import DailyNoteForm from './src/DailyNoteForm/App'
+import { StoreProvider } from './src/Store'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-
-
-
 
 const HomeScreen = ({ navigation }) => {
   return (
@@ -37,16 +33,16 @@ const HomeScreen = ({ navigation }) => {
         }
       />
       <Button
-        title="My notes"
+        title="My daily notes"
         onPress={() =>
-          navigation.navigate('Notes', {})
+          navigation.navigate('DailyNoteList', {})
         }
       />
     </>
   );
 };
 
-const ProfileScreen = ({navigation, route}) => {
+const ProfileScreen = ({ navigation, route }) => {
   return <Text>This is {route.params.name}'s profile</Text>;
 }
 
@@ -71,10 +67,15 @@ const MyStack = () => {
             component={NoteForm}
           />
           <Stack.Screen
-            name="Notes"
-            component={NoteList}
+            name="DailyNoteList"
+            component={DailyNoteList}
+          />
+          <Stack.Screen
+            name="DailyNoteForm"
+            component={DailyNoteForm}
           />
         </Stack.Navigator>
+        <StatusBar style="auto" />
       </StoreProvider>
     </NavigationContainer>
   )

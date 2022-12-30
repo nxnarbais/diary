@@ -92,21 +92,22 @@ const fetchData = async (dispatch: any, key: string, axiosParams: AxiosRequestCo
 // };
 
 export const fetchNotes = async (dispatch: any) => {
-  const key = 'dailyNotes';
-  dispatch(requestData(key));
+  const key = 'dailyNotes'
+  dispatch(requestData(key))
   try {
-    const querySnapshot = await getDocs(collection(db, "test"));
+    const collectionName = 'dailyNotes'
+    const querySnapshot = await getDocs(collection(db, collectionName))
     const docs = []
     querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
-      docs.push(doc.data())
-    });
-    console.log({ CNAME, fn: 'fetchNotes', docs });
-    dispatch(receiveData(key, {data: docs}));
+      console.log(`${doc.id} => ${doc.data()}`)
+      docs.push(Object.assign({id: doc.id}, doc.data()))
+    })
+    console.log({ CNAME, fn: 'fetchNotes', docs })
+    dispatch(receiveData(key, {data: docs}))
   } catch (error) {
-    console.error("Error getting document: ", error);
-    console.error({ CNAME, fn: 'fetchNotes', key, error });
-    dispatch(receiveDataInError(key, error));
+    console.error("Error getting document: ", error)
+    console.error({ CNAME, fn: 'fetchNotes', key, error })
+    dispatch(receiveDataInError(key, error))
   }
 }
 

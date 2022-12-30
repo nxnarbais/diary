@@ -32,6 +32,7 @@ export interface IDailyNote {
   title: string
   content: string
   labels: string[]
+  mood: number
 }
 
 export interface IStateStore {

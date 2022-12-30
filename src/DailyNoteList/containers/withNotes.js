@@ -5,7 +5,7 @@ import { Store } from '../../Store'
 import { fetchNotes } from '../../actions'
 
 const CNAME = 'NoteList/containers/withNotes'
-const DEBUG = true
+const DEBUG = false
 
 const HOC = (
   Component,
