@@ -28,6 +28,7 @@ export interface IStatetDailyNotes extends ICallState {
 }
 
 export interface IDailyNote {
+  id?: string
   date: Date
   title: string
   content: string

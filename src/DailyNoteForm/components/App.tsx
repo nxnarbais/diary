@@ -50,11 +50,15 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
     }
   }, [submitting])
 
+  const dateStr = date instanceof Date && !isNaN(date.valueOf())
+    ? date.toLocaleDateString()
+    : (new Date(date.seconds * 1000)).toLocaleDateString()
+
   return (
     <>
       {DEBUG && 
         <>
-          <Text>-- {date.toLocaleDateString()} - {title} --</Text>
+          <Text>-- {dateStr} - {title} --</Text>
           <Text>{content}</Text>
           <Text>labels: {labels && labels.join(', ')}</Text>
         </>
@@ -62,7 +66,7 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
       <TextInput
         style={styles.input}
         onChangeText={(text) => onChangeDate(new Date(text))}
-        value={date.toLocaleDateString()}
+        value={dateStr}
       />
       <TextInput
         style={styles.input}
