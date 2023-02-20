@@ -11,13 +11,14 @@ const Note = (props: { note: IDailyNote, navigateToNote: (IDailyNote) => void })
   const { id, date, title, content, labels, mood } = note
   return (
     <Pressable onPress={() => navigateToNote(note)}>
-      <Text>{(new Date(date.seconds * 1000)).toLocaleDateString()}</Text>
+      <Text>------------------</Text>
+      <Text>{(new Date(Date.parse(date))).toLocaleDateString()}</Text>
+      {/* <Text>{date}</Text> */}
       <Text>{title}</Text>
       <Text>{content}</Text>
       <Text>{labels && labels.join(", ")}</Text>
       <Text>{mood && mood}</Text>
       <Text>{id && id}</Text>
-      <Text> </Text>
     </Pressable>
   )
 }
@@ -66,7 +67,7 @@ const App = (props: any) => {
       path
     }
   } = props
-  // console.log({CNAME, props, path, name, params})
+  DEBUG && console.log({CNAME, props, path, name, params})
 
   const ListWithNotes = withNotes(
     List,

@@ -1,7 +1,6 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native'
-import NoteForm from './src/NoteForm/App'
 import DailyNoteList from './src/DailyNoteList/App'
 import DailyNoteForm from './src/DailyNoteForm/App'
 import { StoreProvider } from './src/Store'
@@ -47,10 +46,6 @@ const MyStack = () => {
           <Stack.Screen
             name="Profile"
             component={ProfileScreen}
-          />
-          <Stack.Screen
-            name="Note Form"
-            component={NoteForm}
           />
           <Stack.Screen
             name="DailyNoteList"

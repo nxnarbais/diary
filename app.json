@@ -28,12 +28,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "92b8c5e3-9ba3-4bad-99e8-1dcbe3669462"
-      }
-    },
-    "owner": "rframboise"
+    }
   }
 }

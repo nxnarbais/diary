@@ -16,6 +16,7 @@ const HOC = (
   }
 ) => {
   const { state, dispatch } = React.useContext(Store)
+  // DEBUG && console.debug({ CNAME, state })
   const {
     dailyNotes
   } = state
@@ -23,7 +24,7 @@ const HOC = (
   useEffect(() => {
     const { data, isFetching, isError } = dailyNotes
     DEBUG && console.log({ CNAME, dailyNotes })
-    DEBUG && console.log({ CNAME, isFetching, isError });
+    DEBUG && console.log({ CNAME, isFetching, isError }); // important ; to make sure the line below does not crash
     (!data && !isFetching && !isError) && fetchNotes(dispatch)
   }, [dailyNotes, dispatch]);
 
@@ -41,10 +42,10 @@ const HOC = (
     return (
       <Fragment>
         {showActivityIndicator && (
-          <Text>{JSON.stringify({isFetching,loadingMessage})}</Text>
+          <Text>{JSON.stringify({isFetching, loadingMessage})}</Text>
         )}
         {showErrorIndicator && (
-          <Text>{JSON.stringify({isError,error})}</Text>
+          <Text>{JSON.stringify({isError, error})}</Text>
         )}
         {(showComponentWhileFetching || (!isFetching && data)) && (
           <Component

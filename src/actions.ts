@@ -1,25 +1,13 @@
 import { IStoreAction } from './interfaces';
-// import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-// import firebase from './auth/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import app from './firebaseConfig'
-import { getFirestore, collection, doc, getDoc, addDoc, getDocs } from 'firebase/firestore'
-
+import { IDailyNote } from './interfaces';
 // import CONST from './const.json';
 
 const CNAME = 'actions';
 const DEBUG = true
+
 // export const BASE_URL = (process.env.NODE_ENV === "production" || process.env.REACT_APP_DATA_SOURCE === "prod") ? CONST.API_BASE_URL_PROD : CONST.API_BASE_URL;
-
-// const throwExceptionIfError = (response: AxiosResponse<{ isError: boolean }>) => {
-//   // console.log({ CNAME, fn: "throwExceptionIfError", "error": { response }});
-//   if(response.data.isError) {
-//     console.error({ CNAME, fn: "throwExceptionIfError", "error": { response }});
-//     throw new Error("Error fetching data");
-//   }
-// };
-
-const db = getFirestore(app);
 
 export const REQUEST_DATA = "REQUEST_DATA";
 export function requestData(key: string): IStoreAction {
@@ -58,25 +46,25 @@ export function receiveDataInError(key: string, error: any): IStoreAction {
   };
 }
 
-const fetchData = async (dispatch: any, key: string, axiosParams: AxiosRequestConfig) => {
-  dispatch(requestData(key));
-  try {
-    // const tokenId = await firebase.getCurrentUserIdToken();
-    // const axiosParamsWithToken = Object.assign(axiosParams, {
-    //   headers: {
-    //     authorization: `Bearer ${tokenId}`,
-    //   },
-    // });
-    // console.log({ CNAME, fn: 'fetchData', url: axiosParams.url, axiosParamsWithToken });
-    // const response = await axios(axiosParamsWithToken);
-    // throwExceptionIfError(response);
-    // console.log({ CNAME, fn: 'fetchData', url: axiosParams.url, axiosParamsWithToken, response, data: response.data });
-    // dispatch(receiveData(key, response.data));
-  } catch (error) {
-    console.error({ CNAME, fn: 'fetchData', key, error });
-    dispatch(receiveDataInError(key, error));
-  }
-};
+// const fetchData = async (dispatch: any, key: string, axiosParams: AxiosRequestConfig) => {
+//   dispatch(requestData(key));
+//   try {
+//     // const tokenId = await firebase.getCurrentUserIdToken();
+//     // const axiosParamsWithToken = Object.assign(axiosParams, {
+//     //   headers: {
+//     //     authorization: `Bearer ${tokenId}`,
+//     //   },
+//     // });
+//     // console.log({ CNAME, fn: 'fetchData', url: axiosParams.url, axiosParamsWithToken });
+//     // const response = await axios(axiosParamsWithToken);
+//     // throwExceptionIfError(response);
+//     // console.log({ CNAME, fn: 'fetchData', url: axiosParams.url, axiosParamsWithToken, response, data: response.data });
+//     // dispatch(receiveData(key, response.data));
+//   } catch (error) {
+//     console.error({ CNAME, fn: 'fetchData', key, error });
+//     dispatch(receiveDataInError(key, error));
+//   }
+// };
 
 // export const fetchFarmers = (dispatch: any) => {
 //   const key = 'farmers';
@@ -91,23 +79,34 @@ const fetchData = async (dispatch: any, key: string, axiosParams: AxiosRequestCo
 //   return fetchData(dispatch, key, axiosParams);
 // };
 
-export const fetchNotes = async (dispatch: any) => {
-  const key = 'dailyNotes'
-  dispatch(requestData(key))
-  try {
-    const collectionName = 'dailyNotes'
-    const querySnapshot = await getDocs(collection(db, collectionName))
-    const docs = []
-    querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`)
-      docs.push(Object.assign({id: doc.id}, doc.data()))
-    })
-    console.log({ CNAME, fn: 'fetchNotes', docs })
-    dispatch(receiveData(key, {data: docs}))
-  } catch (error) {
-    console.error("Error getting document: ", error)
-    console.error({ CNAME, fn: 'fetchNotes', key, error })
-    dispatch(receiveDataInError(key, error))
-  }
+const KEY_NOTES = 'dailyNotes'
+export const storeNotes = async (dispatch: any, data: IDailyNote[]) => {
+  // try {
+    const dataStr = JSON.stringify(data)
+    await AsyncStorage.setItem(KEY_NOTES, dataStr)
+    DEBUG && console.log({ CNAME, fn: 'storeNotes', data })
+    dispatch(receiveData(KEY_NOTES, { data }))
+  // } catch (error) {
+  //   console.error("Error storing notes: ", error)
+  // }
 }
 
+export const updateNote = async (dispatch: any, data: IDailyNote[], originalNote: IDailyNote, id: string, item: IDailyNote) => {
+  const objIndex = data.findIndex((obj => obj.id == originalNote.id));
+  data[objIndex] = Object.assign(item, { id: originalNote.id })
+  storeNotes(dispatch, data)
+}
+
+export const fetchNotes = async (dispatch: any) => {
+  dispatch(requestData(KEY_NOTES))
+  try {
+    const dataStr = await AsyncStorage.getItem(KEY_NOTES)
+    // DEBUG && console.log({ CNAME, fn: "fetchNotes", dataStr })
+    const data: IDailyNote[] = dataStr != null ? JSON.parse(dataStr) : null;
+    dispatch(receiveData(KEY_NOTES, { data }))
+  } catch (error) {
+    console.error("Error fetching notes: ", error)
+    console.error({ CNAME, fn: 'fetchNotes', KEY_NOTES, error })
+    dispatch(receiveDataInError(KEY_NOTES, error))
+  }
+}
