@@ -25,7 +25,7 @@ const HOC = (
     const { data, isFetching, isError } = dailyNotes
     DEBUG && console.log({ CNAME, dailyNotes })
     DEBUG && console.log({ CNAME, isFetching, isError }); // important ; to make sure the line below does not crash
-    (!data && !isFetching && !isError) && fetchNotes(dispatch)
+    (!data && data != null && !isFetching && !isError) && fetchNotes(dispatch)
   }, [dailyNotes, dispatch]);
 
   return (props) => {

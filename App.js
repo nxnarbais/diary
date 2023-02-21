@@ -12,9 +12,9 @@ const HomeScreen = ({ navigation }) => {
     <>
       <Text>One note more than another</Text>
       <Button
-        title="Go to Jane's profile"
+        title="Go to my profile"
         onPress={() =>
-          navigation.navigate('Profile', {name: 'Jane'})
+          navigation.navigate('Profile', {name: 'nxnarbais'})
         }
       />
       <Button

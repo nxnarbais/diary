@@ -4,7 +4,7 @@ import { IDailyNote, IStatetDailyNotes } from "../interfaces";
 import withNotes from './containers/withNotes'
 
 const CNAME = 'NoteList/App';
-const DEBUG = true;
+const DEBUG = false;
 
 const Note = (props: { note: IDailyNote, navigateToNote: (IDailyNote) => void }) =>  {
   const { note, navigateToNote } = props
@@ -12,13 +12,10 @@ const Note = (props: { note: IDailyNote, navigateToNote: (IDailyNote) => void })
   return (
     <Pressable onPress={() => navigateToNote(note)}>
       <Text>------------------</Text>
-      <Text>{(new Date(Date.parse(date))).toLocaleDateString()}</Text>
-      {/* <Text>{date}</Text> */}
-      <Text>{title}</Text>
+      {/* <Text>{title} -- {(new Date(Date.parse(date))).toLocaleDateString()}</Text> */}
+      <Text>{title} -- {date}</Text>
       <Text>{content}</Text>
-      <Text>{labels && labels.join(", ")}</Text>
-      <Text>{mood && mood}</Text>
-      <Text>{id && id}</Text>
+      <Text>{labels && labels.join(", ")} - {mood && mood} - {id && id}</Text>
     </Pressable>
   )
 }
