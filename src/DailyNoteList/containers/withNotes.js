@@ -41,19 +41,31 @@ const HOC = (
     };
     return (
       <Fragment>
-        {showActivityIndicator && (
-          <Text>{JSON.stringify({isFetching, loadingMessage})}</Text>
-        )}
-        {showErrorIndicator && (
-          <Text>{JSON.stringify({isError, error})}</Text>
-        )}
-        {(showComponentWhileFetching || (!isFetching && data)) && (
-          <Component
-            {...props}
-            dispatch={dispatch}
-            dailyNotes={dailyNotes}
-          />
-        )}
+        {showActivityIndicator 
+          && isFetching 
+          && (
+            <ActivityIndicator />
+            // <Text>{JSON.stringify({isFetching, loadingMessage})}</Text>
+          )
+        }
+        {showErrorIndicator 
+          && isError
+          && (
+            <Text>{error}</Text>
+            // <Text>{JSON.stringify({isError, error})}</Text>
+          )
+        }
+        {(showComponentWhileFetching 
+          || (!isFetching)) 
+          // || (!isFetching && data)) 
+          && (
+            <Component
+              {...props}
+              dispatch={dispatch}
+              dailyNotes={dailyNotes}
+            />
+          )
+        }
       </Fragment>
     );
   };

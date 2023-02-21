@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, ScrollView } from 'react-native';
 import { IDailyNote } from "../../interfaces";
 
 const CNAME = 'DailyNoteForm/components/App';
-const DEBUG = true;
+const DEBUG = false;
 
 type IOnSubmit = (a: IDailyNote) => Promise<void>;
 
@@ -105,7 +105,13 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
   //   : (new Date(date.seconds * 1000)).toLocaleDateString()
 
   return (
-    <>
+    <ScrollView
+      style={{
+        flexDirection: 'column',
+        // height: 100,
+        padding: 20,
+        flex: 1
+      }}>
       {DEBUG && 
         <>
           <Text>-- {date} - {title} --</Text>
@@ -113,40 +119,90 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
           <Text>labels: {labels && labels.join(', ')}</Text>
         </>
       }
-      <Text>Date</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => onChangeDate(text)}
-        value={date}
-      />
-      <Text>Title</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeTitle}
-        value={title}
-      />
+      <View
+        style={{ 
+          flexDirection: 'row',
+          alignItems: 'center'
+        }}
+      >
+        <Text>Date</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => onChangeDate(text)}
+          value={date}
+        />
+      </View>
+      
+      <View
+        style={{ 
+          flexDirection: 'row',
+          alignItems: 'center'
+        }}
+      >
+        <Text>Title</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeTitle}
+          value={title}
+        />
+      </View>
+
       <Text>Content</Text>
       <TextInput
         multiline
-        numberOfLines={8}
+        numberOfLines={5}
         onChangeText={onChangeContent}
         value={content}
         editable
         style={{padding: 10}}
       />
-      <Text>Labels (separated by `, `)</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => onChangeLabels(text.split(", "))}
-        value={labels && labels.join(", ")}
-      />
-      <Text>Mood (0 to 5)</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => onChangeMood(parseFloat(text))}
-        value={mood  ? mood.toString() : '0'}
-      />
-      {validation && (<Text>{validation.join(", ")}</Text>)}
+
+      <View
+        style={{ 
+          flexDirection: 'row',
+          alignItems: 'center'
+        }}
+      >
+        <Text>Labels (separated by `, `)</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => onChangeLabels(text.split(", "))}
+          value={labels && labels.join(", ")}
+        />
+      </View>
+
+      <View
+        style={{ 
+          flexDirection: 'row',
+          alignItems: 'center'
+        }}
+      >
+        <Text>Mood (0 to 5)</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => onChangeMood(parseFloat(text))}
+          value={mood  ? mood.toString() : '0'}
+        />
+      </View>
+      {validation && (
+        <View
+          style={{ 
+            flexDirection: 'row',
+            // alignItems: 'center'
+          }}
+        >
+          <Text style={{
+            height: 40,
+            marginTop: 8,
+            marginBottom: 8,
+            // borderWidth: 1,
+            // padding: 10,
+            flex: 1
+          }}>
+            {validation.join(", ")}
+          </Text>
+        </View>
+      )}
       <Button
         onPress={() => onChangeSubmitting(true)}
         title={submitting ? "Saving..." : "Save"}
@@ -154,16 +210,17 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
         disabled={submitting}
       />
       {submitting && <ActivityIndicator size="small" />}
-    </>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    margin: 12,
+    margin: 8,
     borderWidth: 1,
     padding: 10,
+    flex: 1
   },
 });
 

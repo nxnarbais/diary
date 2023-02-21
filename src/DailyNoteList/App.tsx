@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, FlatList, Pressable } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, FlatList, Pressable, ScrollView } from 'react-native';
 import { IDailyNote, IStatetDailyNotes } from "../interfaces";
 import withNotes from './containers/withNotes'
 
@@ -27,6 +27,7 @@ const List = (props: { dailyNotes: IStatetDailyNotes, navigateToNote: (IDailyNot
     navigateToNote
   } = props
   const { data } = dailyNotes
+
   const renderItem = ({ item }) => (
     <Note
       note={item}
@@ -34,9 +35,16 @@ const List = (props: { dailyNotes: IStatetDailyNotes, navigateToNote: (IDailyNot
     />
   )
 
+  if (!data || data.length == 0) {
+    return (
+      <>
+        <Text>No notes</Text>
+      </>
+    )
+  }
+
   return (
     <>
-      <Text>List</Text>
       {/* {data.map(dailyNote => 
         <Text key={dailyNote.id}>{JSON.stringify(dailyNote)}</Text>
       )} */}
@@ -80,18 +88,20 @@ const App = (props: any) => {
   }
 
   return (
-    <>
-      <Text>Notes</Text>
+    <View>
       <ListWithNotes 
         navigateToNote={navigateToNote}
       />
       <Button
+        style={{
+          marginTop: 8
+        }}
         title="Add daily note"
         onPress={() =>
           navigation.navigate('DailyNoteForm', { isEdit: false })
         }
       />
-    </>
+    </View>
   )
 }
 
