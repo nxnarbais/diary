@@ -13,6 +13,11 @@ const initialState: IStateStore = {
     isFetching: false,
     isError: false,
     data: undefined,
+  },
+  dailyQuestionNotes: {
+    isFetching: false,
+    isError: false,
+    data: undefined,
   }
 };
 

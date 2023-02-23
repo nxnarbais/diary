@@ -4,10 +4,10 @@ import Form from './components/App'
 // import app from '../firebaseConfig'
 // import { getFirestore, collection, addDoc, doc, updateDoc } from 'firebase/firestore'
 import { Store } from '../Store'
-import { receiveData, storeNotes, updateNote } from '../actions'
+import { storeNotes, updateNotes } from '../actions'
 
 const CNAME = 'DailyNoteForm/App'
-const DEBUG = true;
+const DEBUG = false;
 
 // const db = getFirestore(app);
 
@@ -49,7 +49,7 @@ const onSubmit = (isEdit, originalNote, data, dispatch, navigation) => async (va
       // DEBUG && console.log({CNAME, value, data, newData})
       // updateStore(newData, dispatch)
     } else {
-      await updateNote(dispatch, data, originalNote, originalNote.id, value)
+      await updateNotes(dispatch, data, originalNote, originalNote.id, value)
       // await updateInDB(originalNote.id, value)
       // const objIndex = data.findIndex((obj => obj.id == originalNote.id));
       // data[objIndex] = Object.assign(value, {id: originalNote.id })

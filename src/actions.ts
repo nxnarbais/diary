@@ -1,7 +1,7 @@
 import { IStoreAction } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { IDailyNote } from './interfaces';
+import { IDailyNote, IDailyQuestionNote } from './interfaces';
 // import CONST from './const.json';
 
 const CNAME = 'actions';
@@ -91,7 +91,7 @@ export const storeNotes = async (dispatch: any, data: IDailyNote[]) => {
   // }
 }
 
-export const updateNote = async (dispatch: any, data: IDailyNote[], originalNote: IDailyNote, id: string, item: IDailyNote) => {
+export const updateNotes = async (dispatch: any, data: IDailyNote[], originalNote: IDailyNote, id: string, item: IDailyNote) => {
   const objIndex = data.findIndex((obj => obj.id == originalNote.id));
   data[objIndex] = Object.assign(item, { id: originalNote.id })
   storeNotes(dispatch, data)
@@ -108,5 +108,37 @@ export const fetchNotes = async (dispatch: any) => {
     console.error("Error fetching notes: ", error)
     console.error({ CNAME, fn: 'fetchNotes', KEY_NOTES, error })
     dispatch(receiveDataInError(KEY_NOTES, error))
+  }
+}
+
+const KEY_QUESTION_NOTES = 'dailyQuestionNotes'
+export const storeQuestionNotes = async (dispatch: any, data: IDailyQuestionNote[]) => {
+  // try {
+    const dataStr = JSON.stringify(data)
+    await AsyncStorage.setItem(KEY_QUESTION_NOTES, dataStr)
+    DEBUG && console.log({ CNAME, fn: 'storeQuestionNotes', data })
+    dispatch(receiveData(KEY_QUESTION_NOTES, { data }))
+  // } catch (error) {
+  //   console.error("Error storing question notes: ", error)
+  // }
+}
+
+export const updateQuestionNotes = async (dispatch: any, data: IDailyQuestionNote[], originalNote: IDailyQuestionNote, id: string, item: IDailyQuestionNote) => {
+  const objIndex = data.findIndex((obj => obj.id == originalNote.id));
+  data[objIndex] = Object.assign(item, { id: originalNote.id })
+  storeQuestionNotes(dispatch, data)
+}
+
+export const fetchQuestionNotes = async (dispatch: any) => {
+  dispatch(requestData(KEY_QUESTION_NOTES))
+  try {
+    const dataStr = await AsyncStorage.getItem(KEY_QUESTION_NOTES)
+    // DEBUG && console.log({ CNAME, fn: "fetchNotes", dataStr })
+    const data: IDailyNote[] = dataStr != null ? JSON.parse(dataStr) : null;
+    dispatch(receiveData(KEY_QUESTION_NOTES, { data }))
+  } catch (error) {
+    console.error("Error fetching question notes: ", error)
+    console.error({ CNAME, fn: 'fetchQuestionNotes', KEY_QUESTION_NOTES, error })
+    dispatch(receiveDataInError(KEY_QUESTION_NOTES, error))
   }
 }

@@ -37,8 +37,20 @@ export interface IDailyNote {
   mood: number
 }
 
+export interface IStateDailyQuestionNotes extends ICallState {
+  data?: IDailyQuestionNote[]
+}
+
+export interface IDailyQuestionNote {
+  id?: string
+  date: string
+  question: string
+  answer: string
+}
+
 export interface IStateStore {
   dailyNotes: IStatetDailyNotes
+  dailyQuestionNotes: IStateDailyQuestionNotes
 }
 
 export interface IStoreAction {
