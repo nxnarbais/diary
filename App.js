@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, ScrollView } from 'react-native'
 import DailyNoteList from './src/DailyNoteList/App'
 import DailyNoteForm from './src/DailyNoteForm/App'
+import DailyQuestionList from './src/DailyQuestionList/App'
+import DailyQuestionForm from './src/DailyQuestionForm/App'
 import { StoreProvider } from './src/Store'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -17,27 +19,34 @@ const HomeScreen = ({ navigation }) => {
       <Text>One note more than another</Text>
       <View
         style={{
-          flexDirection: 'row',
+          // flexDirection: 'row',
+          flexDirection: 'column',
           marginTop: 8,
           marginBottom: 8
         }}
       >
-        <View style={{ flex: 0.5 }}>
+        {/* <View style={{ flex: 0.5 }}> */}
         <Button
           title="Go to my profile"
           onPress={() =>
             navigation.navigate('Profile', {name: 'nxnarbais'})
           }
         />
-        </View>
-        <View style={{ flex: 0.5 }}>
+        {/* </View> */}
+        {/* <View style={{ flex: 0.5 }}> */}
         <Button
           title="My daily notes"
           onPress={() =>
             navigation.navigate('DailyNoteList', {})
           }
         />
-        </View>
+        <Button
+          title="Daily Questions"
+          onPress={() =>
+            navigation.navigate('DailyQuestionList', {})
+          }
+        />
+        {/* </View> */}
       </View>
       
       
@@ -72,6 +81,14 @@ const MyStack = () => {
           <Stack.Screen
             name="DailyNoteForm"
             component={DailyNoteForm}
+          />
+          <Stack.Screen
+            name="DailyQuestionList"
+            component={DailyQuestionList}
+          />
+          <Stack.Screen
+            name="DailyQuestionForm"
+            component={DailyQuestionForm}
           />
         </Stack.Navigator>
         <StatusBar style="auto" />

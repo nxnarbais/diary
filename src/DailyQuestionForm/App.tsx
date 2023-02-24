@@ -7,18 +7,19 @@ import { Store } from '../Store'
 import { storeQuestionNotes, updateQuestionNotes } from '../actions'
 
 const CNAME = 'DailyQuestionForm/App'
-const DEBUG = true;
+const DEBUG = false;
 
 const onSubmit = (isEdit, originalNote, data, dispatch, navigation) => async (value) =>  {
+  DEBUG && console.log({ CNAME, fn: "onSubmit", isEdit, originalNote, data, value })
   try {
     if (!isEdit) {
       const newData = data || []
-      newData.push(Object.assign(value, { id: Date.now() }))
+      newData.push(Object.assign(value, { id: value.date.getTime() }))
       await storeQuestionNotes(dispatch, newData)
     } else {
       await updateQuestionNotes(dispatch, data, originalNote, originalNote.id, value)
     }
-    navigation.navigate('DailyQuestionNoteList', {})
+    navigation.navigate('DailyQuestionList', {})
   } catch (e) {
     console.error("Error: ", e);
   }
@@ -38,11 +39,15 @@ const App = (props: any) => {
   const { state, dispatch } = React.useContext(Store)
   const { dailyQuestionNotes: { data } } =  state
   const { isEdit, note } = params
+  // const { note } = params
 
   return <Form
     {...params}
-    init={isEdit && note}
+    // init={isEdit && note}
+    init={note}
     onSubmit={onSubmit(isEdit, note, data, dispatch, navigation)}
+    // onSubmit={onSubmit(note, data, dispatch, navigation)}
+    // onSubmit={console.log}
   />
 }
 

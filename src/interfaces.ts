@@ -43,7 +43,7 @@ export interface IStateDailyQuestionNotes extends ICallState {
 
 export interface IDailyQuestionNote {
   id?: string
-  date: string
+  date: Date
   question: string
   answer: string
 }

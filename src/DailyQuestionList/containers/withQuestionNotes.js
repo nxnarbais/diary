@@ -2,9 +2,9 @@ import React, { useEffect, Fragment } from 'react'
 import { Text } from 'react-native'
 
 import { Store } from '../../Store'
-import { fetchNotes } from '../../actions'
+import { fetchQuestionNotes } from '../../actions'
 
-const CNAME = 'DailyNoteList/containers/withNotes'
+const CNAME = 'DailyQuestionList/containers/withQuestionNotes'
 const DEBUG = false
 
 const HOC = (
@@ -18,15 +18,15 @@ const HOC = (
   const { state, dispatch } = React.useContext(Store)
   // DEBUG && console.debug({ CNAME, state })
   const {
-    dailyNotes
+    dailyQuestionNotes
   } = state
 
   useEffect(() => {
-    const { data, isFetching, isError } = dailyNotes
-    DEBUG && console.log({ CNAME, dailyNotes })
+    const { data, isFetching, isError } = dailyQuestionNotes
+    DEBUG && console.log({ CNAME, dailyQuestionNotes })
     DEBUG && console.log({ CNAME, isFetching, isError }); // important ; to make sure the line below does not crash
-    (!data && data != null && !isFetching && !isError) && fetchNotes(dispatch)
-  }, [dailyNotes, dispatch]);
+    (!data && data != null && !isFetching && !isError) && fetchQuestionNotes(dispatch)
+  }, [dailyQuestionNotes, dispatch]);
 
   return (props) => {
     const {
@@ -34,10 +34,10 @@ const HOC = (
       isError,
       error,
       data,
-    } = dailyNotes;
-    const loadingMessage = 'Loading notes...';
+    } = dailyQuestionNotes;
+    const loadingMessage = 'Loading question notes...';
     const onError = () => {
-      fetchNotes(dispatch);
+      fetchQuestionNotes(dispatch);
     };
     return (
       <Fragment>
@@ -62,7 +62,7 @@ const HOC = (
             <Component
               {...props}
               dispatch={dispatch}
-              dailyNotes={dailyNotes}
+              dailyQuestionNotes={dailyQuestionNotes}
             />
           )
         }

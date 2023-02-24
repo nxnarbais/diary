@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, ScrollVie
 import { IDailyQuestionNote } from "../../interfaces";
 
 const CNAME = 'DailyQuestionNoteForm/components/App';
-const DEBUG = true;
+const DEBUG = false;
 
 type IOnSubmit = (a: IDailyQuestionNote) => Promise<void>;
 
@@ -29,12 +29,13 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
   const validate = (state) => {
     DEBUG && console.debug({ CNAME, fn: "validate", state });
     const { date, question, answer } = state
-    const dateParsed = new Date(Date.parse(date))
+    // const dateParsed = new Date(Date.parse(date))
+    // const dateParsed = date
     const issues = [];
-    if (dateParsed.toLocaleDateString() != date) {
-      DEBUG && console.debug({ CNAME, fn: "validate", msg: "Date cannot be parsed" });
-      issues.push(`Date cannot be parsed ${dateParsed.toLocaleDateString()} to ${date}`)
-    }
+    // if (dateParsed.toLocaleDateString() != date) {
+    //   DEBUG && console.debug({ CNAME, fn: "validate", msg: "Date cannot be parsed" });
+    //   issues.push(`Date cannot be parsed ${dateParsed.toLocaleDateString()} to ${date}`)
+    // }
     if (!question || question == "") {
       DEBUG && console.debug({ CNAME, fn: "validate", msg: "Question cannot be empty" });
       issues.push(`Content cannot be empty: ${question}`)
@@ -87,11 +88,11 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
       }}>
       {DEBUG && 
         <>
-          <Text>-- {date} - {question} --</Text>
+          <Text>-- {date.toLocaleDateString()} - {question} --</Text>
           <Text>{answer}</Text>
         </>
       }
-      <View
+      {/* <View
         style={{ 
           flexDirection: 'row',
           alignItems: 'center'
@@ -100,24 +101,24 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
         <Text>Date</Text>
         <TextInput
           style={styles.input}
-          onChangeText={(text) => onChangeDate(text)}
-          value={date}
+          onChangeText={(text) => {
+            const date = new Date(Date.parse(text))
+            onChangeDate(date)
+          }}
+          value={date.toLocaleDateString()}
         />
-      </View>
+      </View> */}
+      <Text>{date.toLocaleDateString()}</Text>
       
-      <View
-        style={{ 
-          flexDirection: 'row',
-          alignItems: 'center'
-        }}
-      >
-        <Text>Question</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={onChangeQuestion}
-          value={question}
-        />
-      </View>
+      {/* <Text>Question</Text>
+      <TextInput
+        // style={styles.input}
+        multiline
+        numberOfLines={3}
+        onChangeText={onChangeQuestion}
+        value={question}
+      /> */}
+      <Text>{question}</Text>
 
       <Text>Content</Text>
       <TextInput

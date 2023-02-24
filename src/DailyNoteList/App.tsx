@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, FlatList,
 import { IDailyNote, IStatetDailyNotes } from "../interfaces";
 import withNotes from './containers/withNotes'
 
-const CNAME = 'NoteList/App';
+const CNAME = 'DailyNoteList/App';
 const DEBUG = false;
 
 const Note = (props: { note: IDailyNote, navigateToNote: (IDailyNote) => void }) =>  {
