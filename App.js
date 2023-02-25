@@ -1,15 +1,30 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, ScrollView } from 'react-native'
 import DailyNoteList from './src/DailyNoteList/App'
 import DailyNoteForm from './src/DailyNoteForm/App'
 import DailyQuestionList from './src/DailyQuestionList/App'
 import DailyQuestionForm from './src/DailyQuestionForm/App'
+import AuthSignUp from './src/AuthSignUp/App'
+import AuthSignIn from './src/AuthSignIn/App'
 import { StoreProvider } from './src/Store'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import firebaseConfig from './firebaseConfig'
+// import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+// import { Store } from './src/Store'
+
+// const auth = getAuth();
 
 const HomeScreen = ({ navigation }) => {
+
+  // const { state, dispatch } = React.useContext(Store)
+  // const { user } =  state
+
+  // useEffect(() => {
+  //   console.log("INIT")
+  // }, [])
+
   return (
     <ScrollView
       style={{
@@ -17,6 +32,7 @@ const HomeScreen = ({ navigation }) => {
       }}
     >
       <Text>One note more than another</Text>
+      {/* <Text>{user.data && JSON.stringify(user.data)}</Text> */}
       <View
         style={{
           // flexDirection: 'row',
@@ -33,6 +49,18 @@ const HomeScreen = ({ navigation }) => {
           }
         />
         {/* </View> */}
+        <Button
+          title="Sign up"
+          onPress={() => 
+            navigation.navigate('AuthSignUp', {})
+          }
+        />
+        <Button
+          title="Sign in"
+          onPress={() => 
+            navigation.navigate('AuthSignIn', {})
+          }
+        />
         {/* <View style={{ flex: 0.5 }}> */}
         <Button
           title="My daily notes"
@@ -89,6 +117,14 @@ const MyStack = () => {
           <Stack.Screen
             name="DailyQuestionForm"
             component={DailyQuestionForm}
+          />
+          <Stack.Screen
+            name="AuthSignUp"
+            component={AuthSignUp}
+          />
+          <Stack.Screen
+            name="AuthSignIn"
+            component={AuthSignIn}
           />
         </Stack.Navigator>
         <StatusBar style="auto" />

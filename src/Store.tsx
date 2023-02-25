@@ -18,6 +18,11 @@ const initialState: IStateStore = {
     isFetching: false,
     isError: false,
     data: undefined,
+  },
+  user: {
+    isFetching: false,
+    isError: false,
+    data: undefined,
   }
 };
 

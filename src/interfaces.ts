@@ -1,3 +1,12 @@
+import {
+  // Auth,
+  // UserCredential,
+  User,
+  // createUserWithEmailAndPassword,
+  // signInWithEmailAndPassword,
+  // sendPasswordResetEmail,
+} from 'firebase/auth'
+
 export interface ILoading {
   showActivityIndicator: boolean
   showErrorIndicator: boolean
@@ -48,9 +57,14 @@ export interface IDailyQuestionNote {
   answer: string
 }
 
+export interface IStateUser extends ICallState {
+  data?: User
+}
+
 export interface IStateStore {
   dailyNotes: IStatetDailyNotes
   dailyQuestionNotes: IStateDailyQuestionNotes
+  user: IStateUser
 }
 
 export interface IStoreAction {
