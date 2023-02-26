@@ -39,7 +39,7 @@ export interface IStatetDailyNotes extends ICallState {
 export interface IDailyNote {
   id?: string
   // date: Date
-  date: string
+  date: { seconds: number }
   title: string
   content: string
   labels: string[]
@@ -52,7 +52,7 @@ export interface IStateDailyQuestionNotes extends ICallState {
 
 export interface IDailyQuestionNote {
   id?: string
-  date: Date
+  date: { seconds: number }
   question: string
   answer: string
 }
@@ -70,12 +70,4 @@ export interface IStateStore {
 export interface IStoreAction {
   type: string
   payload: any
-}
-
-export interface ITableColumn {
-  title: string
-  dataIndex: string
-  key: string
-  sorter?: any
-  render?: any
 }

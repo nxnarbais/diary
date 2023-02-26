@@ -4,61 +4,44 @@ import Form from './components/App'
 // import app from '../firebaseConfig'
 // import { getFirestore, collection, addDoc, doc, updateDoc } from 'firebase/firestore'
 import { Store } from '../Store'
-import { storeNotes, updateNotes } from '../actions'
+import { KEY_NOTES, receiveData, storeNote, updateNote } from '../actions'
+import IsAuthorized from '../AuthUserWrapper/IsAuthorized'
 
 const CNAME = 'DailyNoteForm/App'
 const DEBUG = false;
 
-// const db = getFirestore(app);
-
-// const saveToDB = async (value) => {
-//   try {
-//     const collectionName = 'dailyNotes'
-//     const docRef = await addDoc(collection(db, collectionName), value);
-//     DEBUG && console.log("Document written with ID: ", docRef.id);
-//   } catch (e) {
-//     console.error("Error adding document: ", e);
-//   }
-// }
-
-// const updateInDB = async (id, value)  => {
-//   try {
-//     const collectionName = 'dailyNotes'
-//     const ref = doc(db, collectionName, id);
-//     const docRef = await updateDoc(ref, value);
-//     DEBUG && console.log("Document updated with ID: ", id);
-//   } catch (e) {
-//     console.error("Error adding document: ", e);
-//   }
-// }
-
-// const updateStore = (data, dispatch) => {
-//   const key = 'dailyNotes'
-//   dispatch(receiveData(key, { data }))
-// }
+const updateDailyNoteStore = (data, dispatch) => {
+  dispatch(receiveData(KEY_NOTES, { data }))
+}
 
 const onSubmit = (isEdit, originalNote, data, dispatch, navigation) => async (value) =>  {
-  try {
-    if (!isEdit) {
-      const newData = data || []
-      newData.push(Object.assign(value, { id: Date.now() }))
-      await storeNotes(dispatch, newData)
-      // await saveToDB(value)
-      // const newData = data || []
-      // newData.push(value)
-      // DEBUG && console.log({CNAME, value, data, newData})
-      // updateStore(newData, dispatch)
-    } else {
-      await updateNotes(dispatch, data, originalNote, originalNote.id, value)
-      // await updateInDB(originalNote.id, value)
-      // const objIndex = data.findIndex((obj => obj.id == originalNote.id));
-      // data[objIndex] = Object.assign(value, {id: originalNote.id })
-      // updateStore(data, dispatch)
-    }
-    navigation.navigate('DailyNoteList', {})
-  } catch (e) {
-    console.error("Error: ", e);
+  if (!isEdit) {
+    // const newData = data || []
+    // newData.push(Object.assign(value, { id: Date.now() }))
+    // await storeNotes(dispatch, newData)
+
+    const id = await storeNote(value)
+    const newData = data || []
+    newData.push(Object.assign(value, {
+      id,
+      date: { seconds: value.date.getTime() / 1000}
+    }))
+    DEBUG && console.log({ CNAME, id, value, data, newData })
+    updateDailyNoteStore(newData, dispatch)
+
+  } else {
+    // await updateNotes(dispatch, data, originalNote, originalNote.id, value)
+
+    await updateNote(originalNote.id, value)
+    const objIndex = data.findIndex((obj => obj.id == originalNote.id));
+    data[objIndex] = Object.assign(value, {
+      id: originalNote.id,
+      date: { seconds: value.date.getTime() / 1000}
+    })
+    DEBUG && console.log({ CNAME, id: originalNote.id, value, parsedValue: data[objIndex] })
+    updateDailyNoteStore(data, dispatch)
   }
+  navigation.navigate('DailyNoteList', {})
 }
 
 const App = (props: any) => {
@@ -70,17 +53,24 @@ const App = (props: any) => {
       path
     }
   } = props
-  DEBUG && console.log({CNAME, props, path, name, params})
+  // DEBUG && console.debug({CNAME, props, path, name, params})
 
   const { state, dispatch } = React.useContext(Store)
-  const { dailyNotes: { data } } =  state
+  const { dailyNotes: { data }, user } =  state
   const { isEdit, note } = params
 
-  return <Form
-    {...params}
-    init={isEdit && note}
-    onSubmit={onSubmit(isEdit, note, data, dispatch, navigation)}
-  />
+  return (
+    <IsAuthorized
+      navigation={navigation}
+      requireLoggedInUser
+    >
+      <Form
+        {...params}
+        uid={user.data.uid}
+        onSubmit={onSubmit(isEdit, note, data, dispatch, navigation)}
+      />
+    </IsAuthorized>
+  )
 }
 
 App.displayName = CNAME;

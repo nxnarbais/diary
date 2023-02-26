@@ -7,21 +7,20 @@ const DEBUG = false;
 
 type IOnSubmit = (a: IDailyQuestionNote) => Promise<void>;
 
-const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnSubmit }) => {
+const App = (props: { isEdit: boolean, note: IDailyQuestionNote, uid: string, onSubmit: IOnSubmit }) => {
   DEBUG && console.debug({ CNAME, props })
 
-  const {isEdit, init, onSubmit} = props;
+  const {isEdit, note, uid, onSubmit} = props;
 
-  // const today = new Date()
-  const [date, onChangeDate] = React.useState(init.date);
-  const [question, onChangeQuestion] = React.useState(init.question);
-  const [answer, onChangeAnswer] = React.useState(!!init && init.answer);
+  const [date, onChangeDate] = React.useState(new Date(note.date.seconds * 1000).toLocaleDateString());
+  const [question, onChangeQuestion] = React.useState(note.question);
+  const [answer, onChangeAnswer] = React.useState(isEdit && note.answer);
   
   const [validation, onChangeValidation] = React.useState(undefined);
   const [submitting, onChangeSubmitting] = React.useState(false);
 
   const state = {
-    date,
+    date: note.date,
     question,
     answer
   }
@@ -37,13 +36,16 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
     //   issues.push(`Date cannot be parsed ${dateParsed.toLocaleDateString()} to ${date}`)
     // }
     if (!question || question == "") {
-      DEBUG && console.debug({ CNAME, fn: "validate", msg: "Question cannot be empty" });
-      issues.push(`Content cannot be empty: ${question}`)
+      const msg = 'Question cannot be empty'
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
     }
     if (!answer || answer == "") {
-      DEBUG && console.debug({ CNAME, fn: "validate", msg: "Answer cannot be empty" });
-      issues.push(`Answer cannot be empty: ${question}`)
+      const msg = 'Answer cannot be empty'
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
     }
+
     if (issues.length > 0) {
       onChangeValidation(issues)
       return false
@@ -53,11 +55,6 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
     }
   }
 
-  // Initialization
-  useEffect(() => {
-    DEBUG && console.debug(`${CNAME} - Initizialization - [isEdit:${isEdit}, init:${init}]`);
-  }, []);
-
   // Submitting
   useEffect(() => {
     DEBUG && console.debug(`${CNAME} - Submitting - [submitting:${submitting}]`);
@@ -66,7 +63,9 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
       if (!isStateValidated) {
         onChangeSubmitting(false)
       } else {
-        onSubmit(state)
+        onSubmit(Object.assign(state, {
+          uid
+        }))
           .catch(console.error)
           // .finally(() => onChangeSubmitting(false))
           .finally(() => {
@@ -88,36 +87,11 @@ const App = (props: { isEdit: boolean, init?: IDailyQuestionNote, onSubmit: IOnS
       }}>
       {DEBUG && 
         <>
-          <Text>-- {date.toLocaleDateString()} - {question} --</Text>
+          <Text>-- {date} - {question} --</Text>
           <Text>{answer}</Text>
         </>
       }
-      {/* <View
-        style={{ 
-          flexDirection: 'row',
-          alignItems: 'center'
-        }}
-      >
-        <Text>Date</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={(text) => {
-            const date = new Date(Date.parse(text))
-            onChangeDate(date)
-          }}
-          value={date.toLocaleDateString()}
-        />
-      </View> */}
-      <Text>{date.toLocaleDateString()}</Text>
-      
-      {/* <Text>Question</Text>
-      <TextInput
-        // style={styles.input}
-        multiline
-        numberOfLines={3}
-        onChangeText={onChangeQuestion}
-        value={question}
-      /> */}
+      <Text>{date}</Text>
       <Text>{question}</Text>
 
       <Text>Content</Text>

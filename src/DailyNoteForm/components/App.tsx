@@ -7,21 +7,20 @@ const DEBUG = false;
 
 type IOnSubmit = (a: IDailyNote) => Promise<void>;
 
-const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit }) => {
+const App = (props: { isEdit: boolean, note?: IDailyNote, uid: string, onSubmit: IOnSubmit }) => {
   DEBUG && console.debug({ CNAME, props })
 
-  const {isEdit, init, onSubmit} = props;
+  const {isEdit, note, uid, onSubmit} = props;
 
   const today = new Date()
   const defaultTitle = `Note of ${today.toLocaleDateString()}`
-  const [date, onChangeDate] = React.useState(!!init && init.date || (new Date()).toLocaleDateString());
-  const [title, onChangeTitle] = React.useState(!!init && init.title || defaultTitle);
-  const [content, onChangeContent] = React.useState(!!init && init.content);
-  const [labels, onChangeLabels] = React.useState(!!init && init.labels || []);
-  const [mood, onChangeMood] = React.useState(!!init && init.mood);
+  const [date, onChangeDate] = React.useState(isEdit ? new Date(note.date.seconds * 1000).toLocaleDateString() : today.toLocaleDateString());
+  const [title, onChangeTitle] = React.useState(isEdit && note.title || defaultTitle);
+  const [content, onChangeContent] = React.useState(isEdit && note.content);
+  const [labels, onChangeLabels] = React.useState(isEdit && note.labels || []);
+  const [mood, onChangeMood] = React.useState(isEdit && note.mood);
 
   const [validation, onChangeValidation] = React.useState(undefined);
-
   const [submitting, onChangeSubmitting] = React.useState(false);
 
   const state = {
@@ -34,23 +33,37 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
 
   const validate = (state) => {
     DEBUG && console.debug({ CNAME, fn: "validate", state });
-    const { date, content, mood } = state
-    DEBUG && console.debug({ CNAME, fn: "validate", date, content, mood });
+    const { date, title, content, labels, mood } = state
+    // DEBUG && console.debug({ CNAME, fn: "validate", date, content, mood });
     const dateParsed = new Date(Date.parse(date))
     // DEBUG && console.debug({ CNAME, fn: "validate", dateParsed });
     const issues = [];
     if (dateParsed.toLocaleDateString() != date) {
-      DEBUG && console.debug({ CNAME, fn: "validate", msg: "Date cannot be parsed" });
-      issues.push(`Date cannot be parsed ${dateParsed.toLocaleDateString()} to ${date}`)
+      const msg = `Date cannot be parsed: ${date}`
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
     }
-    if (!content || content == "") {
-      DEBUG && console.debug({ CNAME, fn: "validate", msg: "Content is empty" });
-      issues.push(`Content is empty: ${content}`)
+    if (!title || title == '') {
+      const msg = 'Title is empty'
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
+    }
+    if (date instanceof Date) {
+      const msg = 'Date is not correct'
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
+    }
+    if (!content || content == '') {
+      const msg = 'Content is empty'
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
     }
     if (mood > 5 || mood < 0) {
-      DEBUG && console.debug({ CNAME, fn: "validate", msg: "Mood level should be between 0 and 5" });
-      issues.push(`Mood level should be between 0 and 5: ${mood}`)
+      const msg = `Mood level should be between 0 and 5, currently at ${mood}`
+      DEBUG && console.debug({ CNAME, fn: "validate", msg });
+      issues.push(msg)
     }
+
     if (issues.length > 0) {
       onChangeValidation(issues)
       return false
@@ -60,45 +73,28 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
     }
   }
 
-  // Initialization
-  useEffect(() => {
-    DEBUG && console.debug(`${CNAME} - Initizialization - [isEdit:${isEdit}, init:${init}]`);
-  }, []);
-
   // Submitting
   useEffect(() => {
-    DEBUG && console.debug(`${CNAME} - Submitting - [submitting:${submitting}]`);
-    // if (submitting) {
-    //   validate(state)
-    //   if (!!validation) {
-    //     onSubmit(state)
-    //       .catch(console.error)
-    //       // .finally(() => onChangeSubmitting(false))
-    //       .finally(() => {
-    //         setTimeout(() => {
-    //           onChangeSubmitting(false);
-    //         }, 3000);
-    //       })
-    //   } else {
-    //     onChangeSubmitting(false)
-    //   }
-    // }
+    DEBUG && console.debug({ CNAME, fn: 'useEffect', isEdit, submitting })
     if (submitting) {
       const isStateValidated = validate(state)
       if (!isStateValidated) {
         onChangeSubmitting(false)
       } else {
-        onSubmit(state)
+        onSubmit(Object.assign(state, {
+          uid,
+          date: new Date(Date.parse(date))
+        }))
           .catch(console.error)
-          // .finally(() => onChangeSubmitting(false))
-          .finally(() => {
-            setTimeout(() => {
-              onChangeSubmitting(false);
-            }, 3000);
-          })
+          .finally(() => onChangeSubmitting(false))
+          // .finally(() => {
+          //   setTimeout(() => {
+          //     onChangeSubmitting(false);
+          //   }, 3000);
+          // })
       }
     }
-  }, [submitting])
+  }, [submitting, uid])
 
   // const dateStr = date instanceof Date && !isNaN(date.valueOf())
   //   ? date.toLocaleDateString()
@@ -128,7 +124,11 @@ const App = (props: { isEdit: boolean, init?: IDailyNote, onSubmit: IOnSubmit })
         <Text>Date</Text>
         <TextInput
           style={styles.input}
-          onChangeText={(text) => onChangeDate(text)}
+          // onChangeText={(text) => {
+          //   const dateParsed = new Date(Date.parse(text))
+          //   onChangeDate(dateParsed)
+          // }}
+          onChangeText={onChangeDate}
           value={date}
         />
       </View>

@@ -4,25 +4,45 @@ import Form from './components/App'
 // import app from '../firebaseConfig'
 // import { getFirestore, collection, addDoc, doc, updateDoc } from 'firebase/firestore'
 import { Store } from '../Store'
-import { storeQuestionNotes, updateQuestionNotes } from '../actions'
+import { KEY_QUESTION_NOTES, receiveData, storeQuestionNote, updateQuestionNote } from '../actions'
+import IsAuthorized from '../AuthUserWrapper/IsAuthorized'
 
 const CNAME = 'DailyQuestionForm/App'
-const DEBUG = false;
+const DEBUG = true;
+
+const updateDailyQuestionNoteStore = (data, dispatch) => {
+  dispatch(receiveData(KEY_QUESTION_NOTES, { data }))
+}
 
 const onSubmit = (isEdit, originalNote, data, dispatch, navigation) => async (value) =>  {
-  DEBUG && console.log({ CNAME, fn: "onSubmit", isEdit, originalNote, data, value })
-  try {
-    if (!isEdit) {
-      const newData = data || []
-      newData.push(Object.assign(value, { id: value.date.getTime() }))
-      await storeQuestionNotes(dispatch, newData)
-    } else {
-      await updateQuestionNotes(dispatch, data, originalNote, originalNote.id, value)
-    }
-    navigation.navigate('DailyQuestionList', {})
-  } catch (e) {
-    console.error("Error: ", e);
+  DEBUG && console.log({ CNAME, isEdit, originalNote, value })
+  if (!isEdit) {
+    // const newData = data || []
+    // newData.push(Object.assign(value, { id: value.date.getTime() }))
+    // await storeQuestionNotes(dispatch, newData)
+
+    const id = await storeQuestionNote(Object.assign(value, { date: new Date(value.date.seconds * 1000)}))
+    const newData = data || []
+    newData.push(Object.assign(value, {
+      id,
+      // date: { seconds: value.date.getTime() / 1000 }
+    }))
+    DEBUG && console.log({ CNAME, id, value, data, newData })
+    updateDailyQuestionNoteStore(newData, dispatch)
+
+  } else {
+    // await updateQuestionNotes(dispatch, data, originalNote, originalNote.id, value)
+
+    await updateQuestionNote(originalNote.id, value)
+    const objIndex = data.findIndex((obj => obj.id == originalNote.id));
+    data[objIndex] = Object.assign(value, {
+      id: originalNote.id,
+      // date: { seconds: value.date.getTime() / 1000 }
+    })
+    DEBUG && console.log({ CNAME, id: originalNote.id, value, parsedValue: data[objIndex] })
+    updateDailyQuestionNoteStore(data, dispatch)
   }
+  navigation.navigate('DailyQuestionList', {})
 }
 
 const App = (props: any) => {
@@ -34,21 +54,24 @@ const App = (props: any) => {
       path
     }
   } = props
-  DEBUG && console.log({CNAME, props, path, name, params})
+  // DEBUG && console.debug({CNAME, props, path, name, params})
 
   const { state, dispatch } = React.useContext(Store)
-  const { dailyQuestionNotes: { data } } =  state
+  const { dailyQuestionNotes: { data }, user } =  state
   const { isEdit, note } = params
-  // const { note } = params
 
-  return <Form
-    {...params}
-    // init={isEdit && note}
-    init={note}
-    onSubmit={onSubmit(isEdit, note, data, dispatch, navigation)}
-    // onSubmit={onSubmit(note, data, dispatch, navigation)}
-    // onSubmit={console.log}
-  />
+  return (
+    <IsAuthorized
+      navigation={navigation}
+      requireLoggedInUser
+    >
+      <Form
+        {...params}
+        uid={user.data.uid}
+        onSubmit={onSubmit(isEdit, note, data, dispatch, navigation)}
+      />
+    </IsAuthorized>
+  )
 }
 
 App.displayName = CNAME;

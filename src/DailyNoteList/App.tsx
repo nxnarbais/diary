@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, FlatList, Pressable, ScrollView } from 'react-native';
-import { IDailyNote, IStatetDailyNotes } from "../interfaces";
+import IsAuthorized from '../AuthUserWrapper/IsAuthorized';
+import { IDailyNote, IStatetDailyNotes, IStateUser } from "../interfaces";
+import { Store } from "../Store";
 import withNotes from './containers/withNotes'
 
 const CNAME = 'DailyNoteList/App';
@@ -8,20 +10,26 @@ const DEBUG = false;
 
 const Note = (props: { note: IDailyNote, navigateToNote: (IDailyNote) => void }) =>  {
   const { note, navigateToNote } = props
-  const { id, date, title, content, labels, mood } = note
+  const { id, date: dateObj, title, content, labels, mood } = note
+  // return (<Text>{JSON.stringify(note)}</Text>)
+  const date = new Date(dateObj.seconds * 1000)
   return (
     <Pressable onPress={() => navigateToNote(note)}>
-      <Text>------------------</Text>
+      {/* <Text>------------------</Text> */}
       {/* <Text>{title} -- {(new Date(Date.parse(date))).toLocaleDateString()}</Text> */}
-      <Text>{title} -- {date}</Text>
+      <Text>-- {title} -- {date.toLocaleDateString()} --</Text>
       <Text>{content}</Text>
       <Text>{labels && labels.join(", ")} - {mood && mood} - {id && id}</Text>
     </Pressable>
   )
 }
 
-const List = (props: { dailyNotes: IStatetDailyNotes, navigateToNote: (IDailyNote) => void}) => {
-  DEBUG && console.log({ CNAME, fn: 'List', props })
+const List = (props: { 
+  dailyNotes: IStatetDailyNotes, 
+  navigateToNote: (IDailyNote) => void,
+  user: IStateUser
+}) => {
+  // DEBUG && console.debug({ CNAME, fn: 'List', props })
   const {
     dailyNotes,
     navigateToNote
@@ -53,12 +61,6 @@ const List = (props: { dailyNotes: IStatetDailyNotes, navigateToNote: (IDailyNot
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
-      {/* {data.map(dailyNote => 
-        <Note 
-          key={dailyNote.id}
-          note={dailyNote}
-        />
-      )} */}
     </>
   )
 }
@@ -72,7 +74,7 @@ const App = (props: any) => {
       path
     }
   } = props
-  DEBUG && console.log({CNAME, props, path, name, params})
+  // DEBUG && console.debug({CNAME, props, path, name, params})
 
   const ListWithNotes = withNotes(
     List,
@@ -88,20 +90,23 @@ const App = (props: any) => {
   }
 
   return (
-    <View>
-      <ListWithNotes 
-        navigateToNote={navigateToNote}
-      />
-      <Button
-        style={{
-          marginTop: 8
-        }}
-        title="Add daily note"
-        onPress={() =>
-          navigation.navigate('DailyNoteForm', { isEdit: false })
-        }
-      />
-    </View>
+    <IsAuthorized
+      navigation={navigation}
+      requireLoggedInUser
+    >
+      <View>
+        <ListWithNotes
+          // user={user}
+          navigateToNote={navigateToNote}
+        />
+        <Button
+          title="Add daily note"
+          onPress={() =>
+            navigation.navigate('DailyNoteForm', { isEdit: false })
+          }
+        />
+      </View>
+    </IsAuthorized>
   )
 }
 
