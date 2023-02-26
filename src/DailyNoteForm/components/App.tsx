@@ -14,7 +14,7 @@ const App = (props: { isEdit: boolean, note?: IDailyNote, uid: string, onSubmit:
 
   const today = new Date()
   const defaultTitle = `Note of ${today.toLocaleDateString()}`
-  const [date, onChangeDate] = React.useState(isEdit ? new Date(note.date.seconds * 1000).toLocaleDateString() : today.toLocaleDateString());
+  const [date, onChangeDate] = React.useState(isEdit ? new Date(note.date).toLocaleDateString() : today.toLocaleDateString());
   const [title, onChangeTitle] = React.useState(isEdit && note.title || defaultTitle);
   const [content, onChangeContent] = React.useState(isEdit && note.content);
   const [labels, onChangeLabels] = React.useState(isEdit && note.labels || []);
@@ -83,7 +83,7 @@ const App = (props: { isEdit: boolean, note?: IDailyNote, uid: string, onSubmit:
       } else {
         onSubmit(Object.assign(state, {
           uid,
-          date: new Date(Date.parse(date))
+          date: new Date(Date.parse(date)).getTime()
         }))
           .catch(console.error)
           .finally(() => onChangeSubmitting(false))

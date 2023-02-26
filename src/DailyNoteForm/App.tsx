@@ -24,7 +24,7 @@ const onSubmit = (isEdit, originalNote, data, dispatch, navigation) => async (va
     const newData = data || []
     newData.push(Object.assign(value, {
       id,
-      date: { seconds: value.date.getTime() / 1000}
+      // date: { seconds: value.date.getTime() / 1000}
     }))
     DEBUG && console.log({ CNAME, id, value, data, newData })
     updateDailyNoteStore(newData, dispatch)
@@ -36,7 +36,7 @@ const onSubmit = (isEdit, originalNote, data, dispatch, navigation) => async (va
     const objIndex = data.findIndex((obj => obj.id == originalNote.id));
     data[objIndex] = Object.assign(value, {
       id: originalNote.id,
-      date: { seconds: value.date.getTime() / 1000}
+      // date: { seconds: value.date.getTime() / 1000}
     })
     DEBUG && console.log({ CNAME, id: originalNote.id, value, parsedValue: data[objIndex] })
     updateDailyNoteStore(data, dispatch)

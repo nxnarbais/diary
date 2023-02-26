@@ -12,7 +12,7 @@ const App = (props: { isEdit: boolean, note: IDailyQuestionNote, uid: string, on
 
   const {isEdit, note, uid, onSubmit} = props;
 
-  const [date, onChangeDate] = React.useState(new Date(note.date.seconds * 1000).toLocaleDateString());
+  const [date, onChangeDate] = React.useState(new Date(note.date).toLocaleDateString());
   const [question, onChangeQuestion] = React.useState(note.question);
   const [answer, onChangeAnswer] = React.useState(isEdit && note.answer);
   

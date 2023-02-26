@@ -30,7 +30,7 @@ const List = (props: { dailyQuestionNotes: IStateDailyQuestionNotes, navigateToQ
 
   const markedDates = {};
   data && data.forEach(note => {
-    const date = new Date(note.date.seconds * 1000)
+    const date = new Date(note.date)
     markedDates[date.toISOString().split("T")[0]] = { marked: true }
   })
 
@@ -40,11 +40,14 @@ const List = (props: { dailyQuestionNotes: IStateDailyQuestionNotes, navigateToQ
         onDayPress={day => {
           const date = new Date(day.dateString)
           DEBUG && console.debug({ CNAME, fn: 'Calendar.onDayPress', day, date });
-          const foundNote = data && data.find((note: IDailyQuestionNote) => note.date.seconds * 1000 === date.getTime())
+          // const foundNote = data && data.find((note: IDailyQuestionNote) => note.date.seconds * 1000 === date.getTime())
+          const foundNote = data && data.find((note: IDailyQuestionNote) => note.date == date.getTime())
           DEBUG && console.debug({ CNAME, fn: 'Calendar.onDayPress', day, foundNote });
+          console.log(data.map(note => note.date))
           const isEdit = !!foundNote
           const note: IDailyQuestionNote = isEdit ? foundNote : {
-            date: { seconds: date.getTime() / 1000 },
+            // date: { seconds: date.getTime() / 1000 },
+            date: date.getTime(),
             question: questions[getNumberOfDays(`${day.year}-01-01`, day.dateString)],
             answer: ''
           }

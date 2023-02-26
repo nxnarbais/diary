@@ -10,14 +10,12 @@ const DEBUG = false;
 
 const Note = (props: { note: IDailyNote, navigateToNote: (IDailyNote) => void }) =>  {
   const { note, navigateToNote } = props
-  const { id, date: dateObj, title, content, labels, mood } = note
+  const { id, date, title, content, labels, mood } = note
   // return (<Text>{JSON.stringify(note)}</Text>)
-  const date = new Date(dateObj.seconds * 1000)
+  const parsedDate = new Date(date)
   return (
     <Pressable onPress={() => navigateToNote(note)}>
-      {/* <Text>------------------</Text> */}
-      {/* <Text>{title} -- {(new Date(Date.parse(date))).toLocaleDateString()}</Text> */}
-      <Text>-- {title} -- {date.toLocaleDateString()} --</Text>
+      <Text>-- {title} -- {parsedDate.toLocaleDateString()} --</Text>
       <Text>{content}</Text>
       <Text>{labels && labels.join(", ")} - {mood && mood} - {id && id}</Text>
     </Pressable>

@@ -80,8 +80,10 @@ export const fetchNotes = async (dispatch: any, uid: string) => {
     const querySnapshot = await getDocs(query(collection(firestoreDB, COLLECTION_NAME_NOTES), where("uid", "==", uid)))
     const docs = []
     querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`)
-      docs.push(Object.assign({id: doc.id}, doc.data()))
+      DEBUG && console.debug({ CNAME, fn: 'fetchNotes', docID: doc.id, docData: doc.data()})
+      const parsedDoc = Object.assign(doc.data(), { id: doc.id })
+      const transformedDoc = Object.assign(parsedDoc, { date: parsedDoc.date.seconds * 1000 })
+      docs.push(transformedDoc)
     })
     // DEBUG && console.log({ CNAME, fn: 'fetchNotes', docs })
     dispatch(receiveData(KEY_NOTES, {data: docs}))
@@ -93,14 +95,16 @@ export const fetchNotes = async (dispatch: any, uid: string) => {
 }
 
 export const storeNote = async (value) => {
-  const docRef = await addDoc(collection(firestoreDB, COLLECTION_NAME_NOTES), value);
+  const transformedValue = Object.assign(value, { date: new Date(value.date) })
+  const docRef = await addDoc(collection(firestoreDB, COLLECTION_NAME_NOTES), transformedValue);
   DEBUG && console.debug("Document written with ID: ", docRef.id);
   return docRef.id
 }
 
 export const updateNote = async (id, value)  => {
+  const transformedValue = Object.assign(value, { date: new Date(value.date) })
   const ref = doc(firestoreDB, COLLECTION_NAME_NOTES, id);
-  const docRef = await updateDoc(ref, value);
+  const docRef = await updateDoc(ref, transformedValue);
   DEBUG && console.debug("Document updated with ID: ", id);
 }
 
@@ -143,27 +147,30 @@ export const fetchQuestionNotes = async (dispatch: any, uid: string) => {
     const querySnapshot = await getDocs(query(collection(firestoreDB, COLLECTION_NAME_QUESTION_NOTES), where("uid", "==", uid)))
     const docs = []
     querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`)
-      docs.push(Object.assign({id: doc.id}, doc.data()))
+      DEBUG && console.debug({ CNAME, fn: 'fetchQuestionNotes', docID: doc.id, docData: doc.data()})
+      const parsedDoc = Object.assign(doc.data(), { id: doc.id })
+      const transformedDoc = Object.assign(parsedDoc, { date: parsedDoc.date.seconds * 1000 })
+      docs.push(transformedDoc)
     })
     // DEBUG && console.log({ CNAME, fn: 'fetchQuestionNotes', docs })
-    dispatch(receiveData(KEY_QUESTION_NOTES, {data: docs}))
+    dispatch(receiveData(KEY_QUESTION_NOTES, { data: docs }))
   } catch (error) {
-    console.error("Error getting document: ", error)
-    console.error({ CNAME, fn: 'fetchNotes', KEY_QUESTION_NOTES, error })
+    console.error({ CNAME, fn: 'fetchQuestionNotes', error })
     dispatch(receiveDataInError(KEY_QUESTION_NOTES, error))
   }
 }
 
 export const storeQuestionNote = async (value) => {
-  const docRef = await addDoc(collection(firestoreDB, COLLECTION_NAME_QUESTION_NOTES), value);
+  const transformedValue = Object.assign(value, { date: new Date(value.date) })
+  const docRef = await addDoc(collection(firestoreDB, COLLECTION_NAME_QUESTION_NOTES), transformedValue);
   DEBUG && console.debug("Document written with ID: ", docRef.id);
   return docRef.id
 }
 
 export const updateQuestionNote = async (id, value)  => {
+  const transformedValue = Object.assign(value, { date: new Date(value.date) })
   const ref = doc(firestoreDB, COLLECTION_NAME_QUESTION_NOTES, id);
-  const docRef = await updateDoc(ref, value);
+  const docRef = await updateDoc(ref, transformedValue);
   DEBUG && console.debug("Document updated with ID: ", id);
 }
 
