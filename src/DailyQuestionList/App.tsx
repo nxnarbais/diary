@@ -1,61 +1,62 @@
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, TextInput, View, Button, ActivityIndicator, FlatList, Pressable, ScrollView } from 'react-native'
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars'
+import {
+  // StyleSheet,
+  // Text,
+  // TextInput,
+  View,
+  // Button,
+  // ActivityIndicator,
+  // FlatList,
+  // Pressable,
+  // ScrollView
+} from 'react-native'
+import {
+  Calendar,
+  // CalendarList,
+  // Agenda
+} from 'react-native-calendars'
 import IsAuthorized from '../AuthUserWrapper/IsAuthorized';
-import { IDailyQuestionNote, IStateDailyQuestionNotes, IStateUser } from "../interfaces";
-import { Store } from "../Store";
+import { IDailyQuestionNote, IStateDailyQuestionNotes } from "../interfaces";
 import withQuestionNotes from './containers/withQuestionNotes'
 import questions from './questions.json'
+import { getNumberOfDays, getMarkedDates, findNoteWithDate } from './utils'
 
-const CNAME = 'DailyNoteList/App';
+const CNAME = 'DailyQuestionList/App';
 const DEBUG = false;
 
-function getNumberOfDays(start, end) {
-  const date1 = new Date(start);
-  const date2 = new Date(end);
-  const oneDay = 1000 * 60 * 60 * 24; // One day in milliseconds
-  // Calculating the time difference between two dates
-  const diffInTime = date2.getTime() - date1.getTime();
-  const diffInDays = Math.round(diffInTime / oneDay); // Calculating the no. of days between two dates
-  return diffInDays;
-}
-
-const List = (props: { dailyQuestionNotes: IStateDailyQuestionNotes, navigateToQuestionForm: (boolean, IDailyQuestionNote) => void}) => {
-  DEBUG && console.log({ CNAME, fn: 'List', props })
+const List = (props: {
+  dailyQuestionNotes: IStateDailyQuestionNotes,
+  navigateToQuestionForm: (boolean, IDailyQuestionNote) => void
+}) => {
   const {
     dailyQuestionNotes,
     navigateToQuestionForm
   } = props
-  const { data } = dailyQuestionNotes
+  const { data: notes } = dailyQuestionNotes
 
-  const markedDates = {};
-  data && data.forEach(note => {
-    const date = new Date(note.date)
-    markedDates[date.toISOString().split("T")[0]] = { marked: true }
-  })
+  const onDayPress = (day) => {
+    const date = new Date(day.dateString)
+    DEBUG && console.debug({ CNAME, fn: 'Calendar.onDayPress', day, date });
+    const foundNote = findNoteWithDate(notes, date)
+    const note: IDailyQuestionNote = foundNote || {
+      date: date.getTime(),
+      question: questions[getNumberOfDays(`${day.year}-01-01`, day.dateString)],
+      answer: ''
+    }
+    const isEdit = !!foundNote
+    return navigateToQuestionForm(isEdit, note)
+  }
+
+  // Initialization
+  useEffect(() => {
+    DEBUG && console.debug({ CNAME, fn: 'List.useEffect', props })
+  }, [])
 
   return (
-    <>
-      <Calendar 
-        onDayPress={day => {
-          const date = new Date(day.dateString)
-          DEBUG && console.debug({ CNAME, fn: 'Calendar.onDayPress', day, date });
-          // const foundNote = data && data.find((note: IDailyQuestionNote) => note.date.seconds * 1000 === date.getTime())
-          const foundNote = data && data.find((note: IDailyQuestionNote) => note.date == date.getTime())
-          DEBUG && console.debug({ CNAME, fn: 'Calendar.onDayPress', day, foundNote });
-          console.log(data.map(note => note.date))
-          const isEdit = !!foundNote
-          const note: IDailyQuestionNote = isEdit ? foundNote : {
-            // date: { seconds: date.getTime() / 1000 },
-            date: date.getTime(),
-            question: questions[getNumberOfDays(`${day.year}-01-01`, day.dateString)],
-            answer: ''
-          }
-          return navigateToQuestionForm(isEdit, note)
-        }}
-        markedDates={markedDates}
-      />
-    </>
+    <Calendar 
+      onDayPress={onDayPress}
+      markedDates={getMarkedDates(notes)}
+    />
   )
 }
 

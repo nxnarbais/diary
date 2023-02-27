@@ -4,7 +4,7 @@ import { Text, ActivityIndicator } from 'react-native'
 import { Store } from '../../Store'
 import { fetchQuestionNotes } from '../../actions'
 
-const CNAME = 'DailyQuestionNoteList/containers/withNotes'
+const CNAME = 'DailyQuestionList/containers/withNotes'
 const DEBUG = false
 
 const HOC = (
